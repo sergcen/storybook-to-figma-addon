@@ -1,25 +1,22 @@
 import { StoryFn as StoryFunction, StoryContext } from "@storybook/addons";
 import { useEffect, useGlobals } from "@storybook/addons";
+import React from "react";
+import { ComponentWrapper } from './components/ComponentWrapper/ComponentWrapper';
 
 export const withGlobals = (StoryFn: StoryFunction, context: StoryContext) => {
   const [{ myAddon }] = useGlobals();
-  // Is the addon being used in the docs panel
-  const isInDocs = context.viewMode === "docs";
 
-  useEffect(() => {
-    // Execute your side effect here
-    // For example, to manipulate the contents of the preview
-    const selectorId = isInDocs
-      ? `#anchor--${context.id} .docs-story`
-      : `#root`;
+  const enabled = context.viewMode === "story" && myAddon;
+    console.log(context);
+  if (!enabled) {
+    return StoryFn();
+  }
 
-    displayToolState(selectorId, {
-      myAddon,
-      isInDocs,
-    });
-  }, [myAddon]);
-
-  return StoryFn();
+  return (
+      <ComponentWrapper props={context.args} name="test">
+         {StoryFn()}
+      </ComponentWrapper>
+  );
 };
 
 function displayToolState(selector: string, state: any) {
